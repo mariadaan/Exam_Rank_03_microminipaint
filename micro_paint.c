@@ -41,27 +41,54 @@ void print_file(FILE *fp)
 	}
 }
 
-// int parse_input(FILE *fp, t_info *info)
-// {
-// 	char specifier;
-// 	int ret;
+void print_matrix(int width, int height, char c)
+{
+	int i_y = 0;
 
-// 	while (fscanf(fp, "%f %f %f %f %c", &info->x, &info->y, &info->width, &info->height, &info->rect_type))
-// 	{
-		
-// 		if (info->rect_type == 'r')
-// 			draw_empty(info);
-// 		else if (info->rect_type == 'R')
-// 			draw_full(info);
-// 		else
-// 		{
-// 			write(1, "Error: Operation file corrupted\n", 32);
-// 			return (0);
-// 		}
-// 	}
-// 	return (0);
-// }
+	while (i_y < height)
+	{
+		int i_x = 0;
+		while (i_x < width)
+		{
+			write(1, &c, 1);
+			i_x++;
+		}
+		write(1, "\n", 1);
+		i_y++;
+	}
+}
 
+char **create_matrix(int width, int height, char c)
+{
+	char **matrix;
+	char *row;
+
+	matrix = calloc(height, sizeof(char *));
+	int i_y = 0;
+	while (i_y < height)
+	{
+		row = calloc(width, sizeof(char));
+		int i_x = 0;
+		while (i_x < width)
+		{
+			row[i_x] = c;
+			i_x++;
+		}
+		matrix[i_y] = row;
+		i_y++;
+	}
+	return matrix;
+}
+
+int get_background(FILE *fp, t_info *info)
+{
+	int ret;
+	ret = fscanf(fp, "%d %d %c\n", &info->bg_width, &info->bg_height, &info->bg_char);
+	printnum("bg", info->bg_width);
+	printnum("return", ret);
+	// check if values are valid
+	return (0);
+}
 void draw_empty(t_info *info, char **matrix)
 {
 	int x_int;
@@ -112,55 +139,6 @@ int alter_matrix(FILE *fp, t_info *info, char **matrix)
 	return (0);
 }
 
-void print_square(int width, int height, char c)
-{
-	int i_y = 0;
-
-	while (i_y < height)
-	{
-		int i_x = 0;
-		while (i_x < width)
-		{
-			write(1, &c, 1);
-			i_x++;
-		}
-		write(1, "\n", 1);
-		i_y++;
-	}
-}
-
-char **create_matrix(int width, int height, char c)
-{
-	char **matrix;
-	char *row;
-
-	matrix = calloc(height, sizeof(char *));
-	int i_y = 0;
-	while (i_y < height)
-	{
-		row = calloc(width, sizeof(char));
-		int i_x = 0;
-		while (i_x < width)
-		{
-			row[i_x] = c;
-			i_x++;
-		}
-		matrix[i_y] = row;
-		i_y++;
-	}
-	return matrix;
-}
-
-int get_background(FILE *fp, t_info *info)
-{
-	int ret;
-	ret = fscanf(fp, "%d %d %c\n", &info->bg_width, &info->bg_height, &info->bg_char);
-	printnum("bg", info->bg_width);
-	printnum("return", ret);
-	// check if values are valid
-	return (0);
-}
-
 int main(int argc, char *argv[])
 {
 	t_info info;
@@ -177,16 +155,6 @@ int main(int argc, char *argv[])
 	get_background(fp, &info);
 	matrix = create_matrix(info.bg_width, info.bg_height, info.bg_char);
 	alter_matrix(fp, &info, matrix);
-	// print_file(fp);
-	// parse_input(fp, &info);
 	print_2D(matrix, info.bg_height);
-	printfloat("info.x_empty", info.x_empty);
-	printfloat("info.width_empty", info.width_empty);
-
-	// print_square(info.bg_width, info.bg_height, info.bg_char);
-	// printnum("\nwidth", info.bg_width);
-	// printnum("\nbg_height", info.bg_height);
-	// printchar("\nbg_char", info.bg_char);
-
 
 }
