@@ -4,6 +4,7 @@
 #include <math.h>
 #include <string.h>
 
+// gcc micro_paint.c printvar.c && ./a.out operation_file.txt
 
 int	printnum(char *name, int num);
 int	printchar(char *name, char c);
@@ -89,6 +90,32 @@ int get_background(FILE *fp, t_info *info)
 	// check if values are valid
 	return (0);
 }
+
+// void get_bounds(float *width, float *height, float x, float y)
+// {
+// 	printfloat("width", *width);
+// 	printfloat("height", *height);
+
+// 	float total_x;
+// 	float total_y;
+
+// 	total_x = x + *width;
+// 	total_y = y + *height;
+
+// 	if (total_x )
+
+// }
+
+// void get_int(float start_point, float length)
+// {
+// 	float top_left_x = 0.0;
+// 	float top_left_y = 0.0;
+// 	float bottom_right_x = 1.0;
+// 	float bottom_right_y = 1.0;
+
+// 	if ( top_left_x <= start_point <= Xbr and Ytl <= Ya <= Ybr
+// }
+
 void draw_empty(t_info *info, char **matrix)
 {
 	int x_int;
@@ -98,24 +125,27 @@ void draw_empty(t_info *info, char **matrix)
 
 	x_int = ceil(info->x);
 	y_int = ceil(info->y);
-	width_int = ceil(info->width);
-	height_int = ceil(info->height);
+
+	// get_bounds(&info->width, &info->height);
+	width_int = floor(info->width); // alleen ceil doen als het plus het vorige punt ook verder ligt dan het volledige getal, anders floor
+	height_int = ceil(info->height); // alleen ceil doen als het plus het vorige punt ook verder ligt dan het volledige getal, anders floor
 
 	printnum("x_int", x_int);
 	printnum("y_int", y_int);
 	printnum("width_int", width_int);
 	printnum("height_int", height_int);
+	printchar("char", info->rect_char);
 	printf("\n");
 
 	// horizontal rows
-	for (int i_x = info->x; i_x <= width_int; i_x++)
+	for (int i_x = x_int; i_x <= x_int + width_int; i_x++)
 	{
 		matrix[y_int][i_x] = info->rect_char;
 		matrix[y_int + height_int][i_x] = info->rect_char;
 	}
 
 	// vertical columns
-	for (int i_y = y_int; i_y <= height_int; i_y++)
+	for (int i_y = y_int; i_y <= y_int + height_int; i_y++)
 	{
 		matrix[i_y][x_int] = info->rect_char;
 		matrix[i_y][x_int + width_int] = info->rect_char;
