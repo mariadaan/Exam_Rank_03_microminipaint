@@ -54,13 +54,6 @@ char **create_matrix(int width, int height, char c)
 	return matrix;
 }
 
-int get_background(FILE *fp, t_info *info)
-{
-	int ret;
-	ret = fscanf(fp, "%d %d %c\n", &info->bg_width, &info->bg_height, &info->bg_char);
-	// check if values are valid
-	return (0);
-}
 
 int is_inside(float value, float start, float end)
 {
@@ -127,10 +120,25 @@ int alter_matrix(FILE *fp, t_info *info, char **matrix)
 		else
 		{
 			write(1, "Error: Operation file corrupted\n", 32);
-			return (0);
+			return (1);
 		}
 	}
 	return (0);
+}
+
+int get_background(FILE *fp, t_info *info)
+{
+	int ret;
+	ret = fscanf(fp, "%d %d %c\n", &info->bg_width, &info->bg_height, &info->bg_char);
+	
+	if (is_inside(info->bg_width, 1, 300) && is_inside(info->bg_height, 1, 300) && is_inside(info->bg_char, 32, 126))
+		return (0);
+	// check if values are valid
+	else
+	{
+		write(1, "Error: Operation file corrupted\n", 32);
+		return (1);
+	}
 }
 
 int main(int argc, char *argv[])

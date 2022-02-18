@@ -33,23 +33,6 @@ void print_2D(char **array, int height)
 	}
 }
 
-void print_matrix(int width, int height, char c)
-{
-	int i_y = 0;
-
-	while (i_y < height)
-	{
-		int i_x = 0;
-		while (i_x < width)
-		{
-			write(1, &c, 1);
-			i_x++;
-		}
-		write(1, "\n", 1);
-		i_y++;
-	}
-}
-
 char **create_matrix(int width, int height, char c)
 {
 	char **matrix;
@@ -94,7 +77,6 @@ int is_border(float value, float start, float end)
 	return (0);
 }
 
-
 // in rect inside = 2
 // border = 1
 // out rect = 0
@@ -104,16 +86,6 @@ int in_rect(t_info *info, float x_current, float y_current)
 	float x_end = info->x + info->width;
 	float y_start = info->y;
 	float y_end = info->y + info->height;
-
-	// printf("\n\n");
-	// printfloat("x_current", x_current);
-	// printfloat("x_start", x_start);
-	// printfloat("x_end", x_end);
-	// printf("\n");
-	// printfloat("y_current", y_current);
-	// printfloat("y_start", y_start);
-	// printfloat("y_end", y_end);
-
 
 	// hier is ie border of midden
 	if (is_inside(x_current, x_start, x_end) && is_inside(y_current, y_start, y_end))
