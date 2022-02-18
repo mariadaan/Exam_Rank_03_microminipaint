@@ -33,15 +33,6 @@ void print_2D(char **array, int height)
 	}
 }
 
-void print_file(FILE *fp)
-{
-	char s;
-	while((s=fgetc(fp))!=EOF)
-	{
-		printf("%c",s);
-	}
-}
-
 void print_matrix(int width, int height, char c)
 {
 	int i_y = 0;
@@ -85,81 +76,83 @@ int get_background(FILE *fp, t_info *info)
 {
 	int ret;
 	ret = fscanf(fp, "%d %d %c\n", &info->bg_width, &info->bg_height, &info->bg_char);
-	printnum("bg", info->bg_width);
-	printnum("return", ret);
 	// check if values are valid
 	return (0);
 }
 
-// void get_bounds(float *width, float *height, float x, float y)
-// {
-// 	printfloat("width", *width);
-// 	printfloat("height", *height);
-
-// 	float total_x;
-// 	float total_y;
-
-// 	total_x = x + *width;
-// 	total_y = y + *height;
-
-// 	if (total_x )
-
-// }
-
-// void get_int(float start_point, float length)
-// {
-// 	float top_left_x = 0.0;
-// 	float top_left_y = 0.0;
-// 	float bottom_right_x = 1.0;
-// 	float bottom_right_y = 1.0;
-
-// 	if ( top_left_x <= start_point <= Xbr and Ytl <= Ya <= Ybr
-// }
-
-void draw_empty(t_info *info, char **matrix)
+int is_inside(float value, float start, float end)
 {
-	int x_int;
-	int y_int;
-	int width_int;
-	int height_int;
+	if (value >= start && value <= end)
+		return (1);
+	return (0);
+}
 
-	x_int = ceil(info->x);
-	y_int = ceil(info->y);
+int is_border(float value, float start, float end)
+{
+	if (value < (start + 1) || value > (end - 1))
+		return (1);
+	return (0);
+}
 
-	// get_bounds(&info->width, &info->height);
-	width_int = floor(info->width); // alleen ceil doen als het plus het vorige punt ook verder ligt dan het volledige getal, anders floor
-	height_int = ceil(info->height); // alleen ceil doen als het plus het vorige punt ook verder ligt dan het volledige getal, anders floor
 
-	printnum("x_int", x_int);
-	printnum("y_int", y_int);
-	printnum("width_int", width_int);
-	printnum("height_int", height_int);
-	printchar("char", info->rect_char);
-	printf("\n");
+// in rect inside = 2
+// border = 1
+// out rect = 0
+int in_rect(t_info *info, float x_current, float y_current)
+{
+	float x_start = info->x;
+	float x_end = info->x + info->width;
+	float y_start = info->y;
+	float y_end = info->y + info->height;
 
-	// horizontal rows
-	for (int i_x = x_int; i_x <= x_int + width_int; i_x++)
+	// printf("\n\n");
+	// printfloat("x_current", x_current);
+	// printfloat("x_start", x_start);
+	// printfloat("x_end", x_end);
+	// printf("\n");
+	// printfloat("y_current", y_current);
+	// printfloat("y_start", y_start);
+	// printfloat("y_end", y_end);
+
+
+	// hier is ie border of midden
+	if (is_inside(x_current, x_start, x_end) && is_inside(y_current, y_start, y_end))
 	{
-		matrix[y_int][i_x] = info->rect_char;
-		matrix[y_int + height_int][i_x] = info->rect_char;
+		// hier nog checken of het border of midden is
+		if (is_border(x_current, x_start, x_end) || is_border(y_current, y_start, y_end))
+			return (1);
+		return (2);
 	}
+	return (0);
+}
 
-	// vertical columns
-	for (int i_y = y_int; i_y <= y_int + height_int; i_y++)
+int draw_rect(t_info *info, char **matrix)
+{
+	int pos;
+	int i_y = 0;
+	while (i_y < info->bg_height)
 	{
-		matrix[i_y][x_int] = info->rect_char;
-		matrix[i_y][x_int + width_int] = info->rect_char;
+		int i_x = 0;
+		while (i_x < info->bg_width)
+		{
+			pos = in_rect(info, i_x, i_y);
+			if (pos == 1) // border
+				matrix[i_y][i_x] = info->rect_char;
+			else if (pos == 2 && info->rect_type == 'R') // inside
+				matrix[i_y][i_x] = info->rect_char;
+			i_x++;
+		}
+		i_y++;
 	}
+	return (0);
 }
 
 int alter_matrix(FILE *fp, t_info *info, char **matrix)
 {
 	while (fscanf(fp, "%c %f %f %f %f %c\n", &info->rect_type, &info->x, &info->y, &info->width, &info->height, &info->rect_char) != EOF)
 	{
-		if (info->rect_type == 'r')
-			draw_empty(info, matrix);
-		// else if (info->rect_type == 'R')
-		// 	draw_full(info, matrix);
+		if (info->rect_type == 'r' || info->rect_type == 'R')
+			draw_rect(info, matrix);
 		else
 		{
 			write(1, "Error: Operation file corrupted\n", 32);
