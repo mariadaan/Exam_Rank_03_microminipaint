@@ -19,3 +19,7 @@
 - check if pixel is border or not
 - change pixel to rect_char
 7. print matrix
+
+- [ ] try micropaint from scratch
+- [ ] try minipaint from scratch
+

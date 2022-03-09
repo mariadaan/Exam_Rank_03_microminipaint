@@ -137,7 +137,7 @@ int alter_matrix(FILE *fp, t_info *info, char **matrix)
 int main(int argc, char *argv[])
 {
 	t_info info;
-	FILE * fp;
+	FILE *fp;
 	char **matrix;
 
 	if (argc != 2)
